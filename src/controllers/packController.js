@@ -5,7 +5,7 @@ import createErrorText from "../helpers/createErrorText"
 import createSuccessRespond from "../helpers/createSuccessRespond"
 import respondTextConstant from "../constants/respondTextConstant"
 
-const packTb = mongoose.model("user", packModel)
+const packTb = mongoose.model("pack", packModel)
 
 function getPack(req, res)
 {

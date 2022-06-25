@@ -6,6 +6,7 @@ import data from "./data"
 import notFoundRouter from "./routes/notFoundRouter"
 import otpRouter from "./routes/otpRouter"
 import userRouter from "./routes/userRouter"
+import packRouter from "./routes/packRouter"
 
 const app = express()
 app.use(cors())
@@ -18,6 +19,7 @@ mongoose.connect(data.connectServerDb, null, () => console.log("connected to db"
 
 otpRouter(app)
 userRouter(app)
+packRouter(app)
 notFoundRouter(app)
 
 app.listen(data.port, () => console.log(`server is Now Running on Port ${data.port}`))
