@@ -32,18 +32,18 @@ function getReviewCarts(req, res)
                         cartTb.find({
                             pack_id: {$in: pack_id},
                             $or: [
-                                {index: 2, last_review_date: {$lte: createBeforeDate({dayBefore: 4})}},
-                                {index: 3, last_review_date: {$lte: createBeforeDate({dayBefore: 8})}},
-                                {index: 4, last_review_date: {$lte: createBeforeDate({dayBefore: 16})}},
-                                {index: 5, last_review_date: {$lte: createBeforeDate({dayBefore: 32})}},
+                                {index: 2, last_review_date: {$lte: createBeforeDate({dayBefore: 2})}},
+                                {index: 3, last_review_date: {$lte: createBeforeDate({dayBefore: 4})}},
+                                {index: 4, last_review_date: {$lte: createBeforeDate({dayBefore: 8})}},
+                                {index: 5, last_review_date: {$lte: createBeforeDate({dayBefore: 16})}},
                             ],
                         }),
                         cartTb.find(
                             {
                                 pack_id: {$in: pack_id},
                                 $or: [
-                                    {index: 1, last_review_date: undefined, created_date: {$lte: createBeforeDate({dayBefore: 2})}},
-                                    {index: 1, last_review_date: {$lte: createBeforeDate({dayBefore: 2})}},
+                                    {index: 1, last_review_date: undefined, created_date: {$lte: createBeforeDate({dayBefore: 1})}},
+                                    {index: 1, last_review_date: {$lte: createBeforeDate({dayBefore: 1})}},
                                 ],
                             },
                             null,

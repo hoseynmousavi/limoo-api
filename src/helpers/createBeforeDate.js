@@ -1,6 +1,8 @@
 function createBeforeDate({dayBefore = 1})
 {
-    return new Date(new Date().setDate(new Date().getDate() - dayBefore))
+    const yesterday = new Date(new Date().setHours(0, 0, 0, 0))
+    yesterday.setDate(yesterday.getDate() - (dayBefore - 1))
+    return yesterday
 }
 
 export default createBeforeDate
