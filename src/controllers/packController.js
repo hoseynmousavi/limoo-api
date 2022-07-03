@@ -51,7 +51,7 @@ function addPack(req, res)
             newPack.save((err, pack) =>
             {
                 if (err) createErrorText({res, status: 400, message: respondTextConstant.error.createPack, detail: err})
-                else createSuccessRespond({res, data: {...pack, carts_count: 0}, message: respondTextConstant.success.packAdded})
+                else createSuccessRespond({res, data: {...pack.toJSON(), carts_count: 0}, message: respondTextConstant.success.packAdded})
             })
         })
 }
