@@ -41,7 +41,7 @@ function getReviewCarts(req, res)
                             {
                                 pack_id: {$in: pack_id},
                                 $or: [
-                                    {index: 1, last_review_date: undefined, created_date: createBeforeDate({dayBefore: 2})},
+                                    {index: 1, last_review_date: undefined, created_date: {$gte: createBeforeDate({dayBefore: 2})}},
                                     {index: 1, last_review_date: {$gte: createBeforeDate({dayBefore: 2})}},
                                 ],
                             },
