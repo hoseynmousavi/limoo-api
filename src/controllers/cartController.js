@@ -6,6 +6,7 @@ import mongoose from "mongoose"
 import cartModel from "../models/cartModel"
 import packController from "./packController"
 import createBeforeDate from "../helpers/createBeforeDate"
+import reviewController from "./reviewController"
 
 const cartTb = mongoose.model("cart", cartModel)
 
@@ -65,6 +66,30 @@ function getReviewCarts(req, res)
         })
 }
 
+function reviewCart(req, res)
+{
+    checkPermission({req, res})
+        .then(() =>
+        {
+            const {cart_id, know} = req.body
+            cartTb.findOne({_id: cart_id})
+                .then(cart =>
+                {
+                    const {index} = cart
+                    cartTb.findOneAndUpdate({_id: cart_id}, {last_review_date: new Date(), index: know ? index + 1 : index > 1 ? index - 1 : 1}, {new: true, useFindAndModify: false, runValidators: true})
+                        .then(updated =>
+                        {
+                            createSuccessRespond({res, data: updated, message: respondTextConstant.success.reviewCart})
+                            reviewController._addReview({cart_id, know})
+                        })
+                        .catch(err =>
+                        {
+                            createErrorText({res, status: 400, message: respondTextConstant.error.reviewCart, detail: err})
+                        })
+                })
+        })
+}
+
 function addCart(req, res)
 {
     checkPermission({req, res})
@@ -118,6 +143,7 @@ function _deletePackCarts({pack_id})
 const cartController = {
     _getCartsCount,
     getReviewCarts,
+    reviewCart,
     addCart,
     editCart,
     deleteCart,

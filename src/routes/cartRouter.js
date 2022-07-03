@@ -10,6 +10,7 @@ function cartRouter(app)
 
     app.route(urlConstant.cartReview)
         .get(cartController.getReviewCarts)
+        .post(cartController.reviewCart)
 }
 
 export default cartRouter
