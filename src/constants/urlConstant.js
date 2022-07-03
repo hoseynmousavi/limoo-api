@@ -8,6 +8,8 @@ const urlConstant = {
     pack: "/pack",
 
     cart: "/cart",
+
+    cartReview: "/cart-review",
 }
 
 export default urlConstant

@@ -16,6 +16,7 @@ const packModel = new schema({
         type: Date,
         default: Date.now,
     },
+    // carts_count (by query)
 })
 
 export default packModel

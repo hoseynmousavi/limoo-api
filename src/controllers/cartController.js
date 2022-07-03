@@ -17,7 +17,7 @@ function _getCartsCount({pack_id})
     ])
 }
 
-function getCart(req, res)
+function getReviewCarts(req, res)
 {
     checkPermission({req, res})
         .then(user =>
@@ -117,7 +117,7 @@ function _deletePackCarts({pack_id})
 
 const cartController = {
     _getCartsCount,
-    getCart,
+    getReviewCarts,
     addCart,
     editCart,
     deleteCart,
