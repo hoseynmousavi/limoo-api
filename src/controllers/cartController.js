@@ -76,7 +76,7 @@ function reviewCart(req, res)
                 .then(cart =>
                 {
                     const {index} = cart
-                    cartTb.findOneAndUpdate({_id: cart_id}, {last_review_date: new Date(), index: know ? index + 1 : index > 1 ? index - 1 : 1}, {new: true, useFindAndModify: false, runValidators: true})
+                    cartTb.findOneAndUpdate({_id: cart_id}, {last_review_date: new Date(), index: know ? index + 1 : 1}, {new: true, useFindAndModify: false, runValidators: true})
                         .then(updated =>
                         {
                             createSuccessRespond({res, data: updated, message: respondTextConstant.success.reviewCart})
