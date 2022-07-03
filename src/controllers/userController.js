@@ -62,9 +62,9 @@ function updateUser(req, res)
     checkPermission({req, res})
         .then(user =>
         {
-            const {first_name, last_name, email, gender, birth_date} = req.body
+            const {daily_goal, first_name, last_name, email, gender, birth_date} = req.body
             const {_id} = user
-            userTb.findOneAndUpdate({_id}, {first_name, last_name, email, gender, birth_date}, {new: true, useFindAndModify: false, runValidators: true})
+            userTb.findOneAndUpdate({_id}, {daily_goal, first_name, last_name, email, gender, birth_date}, {new: true, useFindAndModify: false, runValidators: true})
                 .then(updated =>
                 {
                     createSuccessRespond({res, data: updated, message: respondTextConstant.success.updateUser})
