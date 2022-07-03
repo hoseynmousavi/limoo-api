@@ -17,6 +17,10 @@ const cartModel = new schema({
         maxLength: 50,
         required: "enter back",
     },
+    back_description: {
+        type: String,
+        maxLength: 200,
+    },
     last_review_date: {
         type: Date,
     },
