@@ -23,7 +23,7 @@ function getReviewCarts(req, res)
     checkPermission({req, res})
         .then(user =>
         {
-            const {_id: user_id} = user
+            const {_id: user_id, daily_goal} = user
             packController._getPacks({query: {user_id}, projection: "_id"})
                 .then(packIds =>
                 {
@@ -47,7 +47,7 @@ function getReviewCarts(req, res)
                                 ],
                             },
                             null,
-                            {limit: 20},
+                            {limit: daily_goal},
                         ),
                     ])
                         .then(([requiredCarts, newCarts]) =>
