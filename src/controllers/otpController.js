@@ -15,10 +15,9 @@ function getOtp(req, res)
 {
     const {phone} = req.body
     otpTb.findOne({phone})
-        .then((preOtp, err) =>
+        .then(preOtp =>
         {
-            if (err) createErrorText({res, status: 500, message: respondTextConstant.error.createOtp, detail: err})
-            else if (!preOtp) _sendOtp({phone, res})
+            if (!preOtp) _sendOtp({phone, res})
             else
             {
                 const diffInSeconds = Math.floor((new Date() - preOtp.created_date) / 1000)
@@ -26,10 +25,13 @@ function getOtp(req, res)
                 if (diffInMinutes >= minutes)
                 {
                     otpTb.deleteOne({phone})
-                        .then((_, err) =>
+                        .then(() =>
                         {
-                            if (err) createErrorText({res, status: 500, message: respondTextConstant.error.createOtp, detail: err})
-                            else _sendOtp({phone, res})
+                            _sendOtp({phone, res})
+                        })
+                        .catch(err =>
+                        {
+                            createErrorText({res, status: 500, message: respondTextConstant.error.createOtp, detail: err})
                         })
                 }
                 else
@@ -40,6 +42,10 @@ function getOtp(req, res)
                     createSuccessRespond({res, message: respondTextConstant.success.otpSentBefore, data: {minutes, seconds}})
                 }
             }
+        })
+        .catch(err =>
+        {
+            createErrorText({res, status: 500, message: respondTextConstant.error.createOtp, detail: err})
         })
 }
 
@@ -63,19 +69,25 @@ function verifyOtp(req, res)
 {
     const {phone, code} = req.body
     otpTb.findOne({phone, code})
-        .then((founded, err) =>
+        .then(founded =>
         {
-            if (err) createErrorText({res, status: 500, message: respondTextConstant.error.verifyOtp, detail: err})
-            else if (!founded) createErrorText({res, status: 400, message: respondTextConstant.error.verifyOtpNotFound})
+            if (!founded) createErrorText({res, status: 400, message: respondTextConstant.error.verifyOtpNotFound})
             else
             {
                 otpTb.deleteOne({phone})
-                    .then((_, err) =>
+                    .then(() =>
                     {
-                        if (err) createErrorText({res, status: 500, message: respondTextConstant.error.createOtp, detail: err})
-                        else userController.createOrGetUser(req, res)
+                        userController.createOrGetUser(req, res)
+                    })
+                    .catch(err =>
+                    {
+                        createErrorText({res, status: 500, message: respondTextConstant.error.createOtp, detail: err})
                     })
             }
+        })
+        .catch(err =>
+        {
+            createErrorText({res, status: 500, message: respondTextConstant.error.verifyOtp, detail: err})
         })
 }
 

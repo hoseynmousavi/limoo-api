@@ -3,13 +3,14 @@ import mongoose from "mongoose"
 const schema = mongoose.Schema
 
 const packModel = new schema({
-    name: {
-        type: String,
-        maxLength: 50,
-    },
     user_id: {
         type: schema.Types.ObjectId,
         required: "enter user_id",
+    },
+    name: {
+        type: String,
+        maxLength: 50,
+        required: "enter name",
     },
     created_date: {
         type: Date,

@@ -23,10 +23,9 @@ function createOrGetUser(req, res)
 {
     const {phone} = req.body
     userTb.findOne({phone})
-        .then((founded, err) =>
+        .then(founded =>
         {
-            if (err) createErrorText({res, status: 500, message: respondTextConstant.error.verifyOtp, detail: err})
-            else if (!founded)
+            if (!founded)
             {
                 const newUser = new userTb({phone})
                 newUser.save((err, user) =>
@@ -36,6 +35,10 @@ function createOrGetUser(req, res)
                 })
             }
             else _sendUser({res, user: founded, is_sign_up: false})
+        })
+        .catch(err =>
+        {
+            createErrorText({res, status: 500, message: respondTextConstant.error.verifyOtp, detail: err})
         })
 }
 
@@ -61,14 +64,14 @@ function updateUser(req, res)
         {
             const {first_name, last_name, email, gender, birth_date} = req.body
             const {_id} = user
-            userTb.findOneAndUpdate(
-                {_id},
-                {first_name, last_name, email, gender, birth_date},
-                {new: true, useFindAndModify: false, runValidators: true},
-                (err, updatedUser) =>
+            userTb.findOneAndUpdate({_id}, {first_name, last_name, email, gender, birth_date}, {new: true, useFindAndModify: false, runValidators: true})
+                .then(updated =>
                 {
-                    if (err) createErrorText({res, status: 400, message: respondTextConstant.error.updateUser, detail: err})
-                    else createSuccessRespond({res, data: updatedUser, message: respondTextConstant.success.updateUser})
+                    createSuccessRespond({res, data: updated, message: respondTextConstant.success.updateUser})
+                })
+                .catch(err =>
+                {
+                    createErrorText({res, status: 400, message: respondTextConstant.error.updateUser, detail: err})
                 })
         })
 }
@@ -83,14 +86,14 @@ function updateAvatar(req, res)
             _saveAvatar({avatar, res})
                 .then(avatarUrl =>
                 {
-                    userTb.findOneAndUpdate(
-                        {_id},
-                        {avatar: avatarUrl},
-                        {new: true, useFindAndModify: false, runValidators: true},
-                        (err, updatedUser) =>
+                    userTb.findOneAndUpdate({_id}, {avatar: avatarUrl}, {new: true, useFindAndModify: false, runValidators: true})
+                        .then(updated =>
                         {
-                            if (err) createErrorText({res, status: 400, message: respondTextConstant.error.updateUser, detail: err})
-                            else createSuccessRespond({res, data: updatedUser, message: respondTextConstant.success.updateUser})
+                            createSuccessRespond({res, data: updated, message: respondTextConstant.success.updateUser})
+                        })
+                        .catch(err =>
+                        {
+                            createErrorText({res, status: 400, message: respondTextConstant.error.updateUser, detail: err})
                         })
                 })
         })
@@ -104,7 +107,7 @@ function _saveAvatar({avatar, res})
         {
             const avatarName = new Date().toISOString() + avatar.name.replace(/ /g, "")
             const avatarUrl = `media/pictures/${avatarName}`
-            avatar.mv(avatarUrl, (err) =>
+            avatar.mv(avatarUrl, err =>
             {
                 if (err) createErrorText({res, status: 400, message: respondTextConstant.error.updateUser, detail: err})
                 else resolve(avatarUrl)

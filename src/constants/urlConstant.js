@@ -6,6 +6,8 @@ const urlConstant = {
     userAvatar: "/user/avatar",
 
     pack: "/pack",
+
+    cart: "/cart",
 }
 
 export default urlConstant

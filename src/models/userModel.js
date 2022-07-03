@@ -9,6 +9,10 @@ const userModel = new schema({
         enum: ["user", "admin"],
         default: "user",
     },
+    daily_goal: {
+        type: Number,
+        default: 20,
+    },
     phone: {
         type: String,
         match: [regexConstant.PHONE_REGEX, "enter valid phone"],
