@@ -24,44 +24,49 @@ function getReviewCarts(req, res)
         .then(user =>
         {
             const {_id: user_id, daily_goal} = user
-            packController._getPacks({query: {user_id}, projection: "_id"})
-                .then(packIds =>
+            reviewController._getReviewCount({query: {user_id, before_index: 1, created_date: {$gte: createBeforeDate({dayBefore: 1})}}})
+                .then(todayNewCartReviews =>
                 {
-                    const pack_id = packIds.reduce((sum, item) => [...sum, item._id], [])
-                    Promise.all([
-                        cartTb.find({
-                            pack_id: {$in: pack_id},
-                            $or: [
-                                {index: 2, last_review_date: {$lte: createBeforeDate({dayBefore: 2})}},
-                                {index: 3, last_review_date: {$lte: createBeforeDate({dayBefore: 4})}},
-                                {index: 4, last_review_date: {$lte: createBeforeDate({dayBefore: 8})}},
-                                {index: 5, last_review_date: {$lte: createBeforeDate({dayBefore: 16})}},
-                            ],
-                        }),
-                        cartTb.find(
-                            {
-                                pack_id: {$in: pack_id},
-                                $or: [
-                                    {index: 1, last_review_date: undefined, created_date: {$lte: createBeforeDate({dayBefore: 1})}},
-                                    {index: 1, last_review_date: {$lte: createBeforeDate({dayBefore: 1})}},
-                                ],
-                            },
-                            null,
-                            {limit: daily_goal},
-                        ),
-                    ])
-                        .then(([requiredCarts, newCarts]) =>
+                    const limit = daily_goal - todayNewCartReviews
+                    packController._getPacks({query: {user_id}, projection: "_id"})
+                        .then(packIds =>
                         {
-                            createSuccessRespond({res, data: {requiredCarts, newCarts}})
+                            const pack_id = packIds.reduce((sum, item) => [...sum, item._id], [])
+                            Promise.all([
+                                cartTb.find({
+                                    pack_id: {$in: pack_id},
+                                    $or: [
+                                        {index: 2, last_review_date: {$lte: createBeforeDate({dayBefore: 2})}},
+                                        {index: 3, last_review_date: {$lte: createBeforeDate({dayBefore: 4})}},
+                                        {index: 4, last_review_date: {$lte: createBeforeDate({dayBefore: 8})}},
+                                        {index: 5, last_review_date: {$lte: createBeforeDate({dayBefore: 16})}},
+                                    ],
+                                }),
+                                cartTb.find(
+                                    {
+                                        pack_id: {$in: pack_id},
+                                        $or: [
+                                            {index: 1, last_review_date: undefined, created_date: {$lte: createBeforeDate({dayBefore: 1})}},
+                                            {index: 1, last_review_date: {$lte: createBeforeDate({dayBefore: 1})}},
+                                        ],
+                                    },
+                                    null,
+                                    {limit},
+                                ),
+                            ])
+                                .then(([requiredCarts, newCarts]) =>
+                                {
+                                    createSuccessRespond({res, data: {requiredCarts, newCarts}})
+                                })
+                                .catch(err =>
+                                {
+                                    createErrorText({res, status: 400, message: respondTextConstant.error.getCarts, detail: err})
+                                })
                         })
                         .catch(err =>
                         {
                             createErrorText({res, status: 400, message: respondTextConstant.error.getCarts, detail: err})
                         })
-                })
-                .catch(err =>
-                {
-                    createErrorText({res, status: 400, message: respondTextConstant.error.getCarts, detail: err})
                 })
         })
 }
@@ -69,8 +74,9 @@ function getReviewCarts(req, res)
 function reviewCart(req, res)
 {
     checkPermission({req, res})
-        .then(() =>
+        .then(user =>
         {
+            const {_id: user_id} = user
             const {cart_id, know} = req.body
             cartTb.findOne({_id: cart_id})
                 .then(cart =>
@@ -80,7 +86,7 @@ function reviewCart(req, res)
                         .then(updated =>
                         {
                             createSuccessRespond({res, data: updated, message: respondTextConstant.success.reviewCart})
-                            reviewController._addReview({cart_id, know})
+                            reviewController._addReview({cart_id, user_id, know, before_index: index})
                         })
                         .catch(err =>
                         {
