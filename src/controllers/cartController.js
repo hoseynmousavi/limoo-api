@@ -7,6 +7,7 @@ import cartModel from "../models/cartModel"
 import packController from "./packController"
 import createBeforeDate from "../helpers/createBeforeDate"
 import reviewController from "./reviewController"
+import xlsx from "node-xlsx"
 
 const cartTb = mongoose.model("cart", cartModel)
 
@@ -101,13 +102,36 @@ function addCart(req, res)
     checkPermission({req, res})
         .then(() =>
         {
-            const {pack_id, front, back} = req.body
-            const newCart = new cartTb({pack_id, front, back})
-            newCart.save((err, cart) =>
+            const file = req?.files?.file
+            const {pack_id, front, back, back_description} = req.body
+            if (file && pack_id)
             {
-                if (err) createErrorText({res, status: 400, message: respondTextConstant.error.createCart, detail: err})
-                else createSuccessRespond({res, data: cart, message: respondTextConstant.success.cartAdded})
-            })
+                const excel = xlsx.parse(file)
+                const sheet = excel[0].data
+                for (let i = 0; i < sheet.length; i++)
+                {
+                    setTimeout(() =>
+                    {
+                        const [front, back, back_description] = sheet[i]
+                        const newCart = new cartTb({pack_id, front, back, back_description})
+                        newCart.save((err, cart) =>
+                        {
+                            if (err) console.log("add cart from excel err: ", err)
+                            else console.log("add cart from excel success: ", cart)
+                        })
+                    }, 10)
+                }
+                createSuccessRespond({res, data: {message: "OK"}})
+            }
+            else
+            {
+                const newCart = new cartTb({pack_id, front, back, back_description})
+                newCart.save((err, cart) =>
+                {
+                    if (err) createErrorText({res, status: 400, message: respondTextConstant.error.createCart, detail: err})
+                    else createSuccessRespond({res, data: cart, message: respondTextConstant.success.cartAdded})
+                })
+            }
         })
 }
 
@@ -116,8 +140,8 @@ function editCart(req, res)
     checkPermission({req, res})
         .then(() =>
         {
-            const {cart_id, front, back} = req.body
-            cartTb.findOneAndUpdate({_id: cart_id}, {front, back}, {new: true, useFindAndModify: false, runValidators: true})
+            const {cart_id, front, back, back_description} = req.body
+            cartTb.findOneAndUpdate({_id: cart_id}, {front, back, back_description}, {new: true, useFindAndModify: false, runValidators: true})
                 .then(updated =>
                 {
                     createSuccessRespond({res, data: updated, message: respondTextConstant.success.updateCart})
