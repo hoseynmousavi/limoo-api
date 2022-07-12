@@ -106,22 +106,30 @@ function addCart(req, res)
             const {pack_id, front, back, back_description} = req.body
             if (file && pack_id)
             {
-                const excel = xlsx.parse(file)
-                const sheet = excel[0].data
-                for (let i = 0; i < sheet.length; i++)
+                const excelName = new Date().toISOString() + file.name.replace(/ /g, "")
+                const excelUrl = `media/excels/${excelName}`
+                file.mv(excelUrl, err =>
                 {
-                    setTimeout(() =>
-                    {
-                        const [front, back, back_description] = sheet[i]
-                        const newCart = new cartTb({pack_id, front, back, back_description})
-                        newCart.save((err, cart) =>
+                    if (err) createErrorText({res, status: 400, message: respondTextConstant.error.parseFile, detail: err})
+                    else {
+                        const excel = xlsx.parse(excelUrl)
+                        const sheet = excel[0].data
+                        for (let i = 0; i < sheet.length; i++)
                         {
-                            if (err) console.log("add cart from excel err: ", err)
-                            else console.log("add cart from excel success: ", cart)
-                        })
-                    }, 10)
-                }
-                createSuccessRespond({res, data: {message: "OK"}})
+                            setTimeout(() =>
+                            {
+                                const [front, back, back_description] = sheet[i]
+                                const newCart = new cartTb({pack_id, front, back, back_description})
+                                newCart.save((err, cart) =>
+                                {
+                                    if (err) console.log("add cart from excel err: ", err)
+                                    else console.log("add cart from excel success: ", cart)
+                                })
+                            }, 10)
+                        }
+                        createSuccessRespond({res, data: {message: "OK"}})
+                    }
+                })
             }
             else
             {
