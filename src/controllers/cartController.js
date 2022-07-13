@@ -43,6 +43,7 @@ function getReviewCarts(req, res)
                                         {index: 5, last_review_date: {$lte: createBeforeDate({dayBefore: 16})}},
                                     ],
                                 }),
+                                limit &&
                                 cartTb.find(
                                     {
                                         pack_id: {$in: pack_id},
@@ -57,7 +58,7 @@ function getReviewCarts(req, res)
                             ])
                                 .then(([requiredCarts, newCarts]) =>
                                 {
-                                    createSuccessRespond({res, data: {requiredCarts, newCarts}})
+                                    createSuccessRespond({res, data: {requiredCarts, newCarts: newCarts || []}})
                                 })
                                 .catch(err =>
                                 {
@@ -111,7 +112,8 @@ function addCart(req, res)
                 file.mv(excelUrl, err =>
                 {
                     if (err) createErrorText({res, status: 400, message: respondTextConstant.error.parseFile, detail: err})
-                    else {
+                    else
+                    {
                         const excel = xlsx.parse(excelUrl)
                         const sheet = excel[0].data
                         for (let i = 0; i < sheet.length; i++)
