@@ -8,7 +8,7 @@ function userRouter(app)
         .patch(userController.updateUser)
 
     app.route(urlConstant.userAvatar)
-        .patch(userController.updateAvatar)
+        .put(userController.updateAvatar)
 }
 
 export default userRouter
