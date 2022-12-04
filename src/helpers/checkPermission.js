@@ -13,12 +13,12 @@ function checkPermission({req, res, minRole = "user"})
                 userController._getUserById({_id})
                     .then(user =>
                     {
-                        if (!user) createErrorText({res, status: 403, message: respondTextConstant.error.getPermission, detail: err})
+                        if (!user) createErrorText({res, status: 403, message: respondTextConstant.error.getPermission})
                         else
                         {
                             const {role} = user
                             if (minRole === "user" || role === "admin") resolve(user)
-                            else createErrorText({res, status: 403, message: respondTextConstant.error.getPermission, detail: err})
+                            else createErrorText({res, status: 403, message: respondTextConstant.error.getPermission})
                         }
                     })
                     .catch(err =>
