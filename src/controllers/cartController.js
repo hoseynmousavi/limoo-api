@@ -98,6 +98,20 @@ function reviewCart(req, res)
         })
 }
 
+function getCarts(req, res)
+{
+    const {pack_id} = req.params
+    cartTb.find({pack_id})
+        .then(carts =>
+        {
+            createSuccessRespond({res, data: carts})
+        })
+        .catch(err =>
+        {
+            createErrorText({res, status: 400, message: respondTextConstant.error.getCarts, detail: err})
+        })
+}
+
 function addCart(req, res)
 {
     checkPermission({req, res})
@@ -188,6 +202,7 @@ const cartController = {
     editCart,
     deleteCart,
     _deletePackCarts,
+    getCarts,
 }
 
 export default cartController

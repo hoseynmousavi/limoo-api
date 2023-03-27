@@ -9,6 +9,8 @@ const urlConstant = {
 
     cart: "/cart",
 
+    getPackCarts: "/cart/:pack_id",
+
     cartReview: "/cart-review",
 }
 

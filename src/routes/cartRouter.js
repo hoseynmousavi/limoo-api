@@ -3,6 +3,9 @@ import cartController from "../controllers/cartController"
 
 function cartRouter(app)
 {
+    app.route(urlConstant.getPackCarts)
+        .get(cartController.getCarts)
+
     app.route(urlConstant.cart)
         .post(cartController.addCart)
         .patch(cartController.editCart)
