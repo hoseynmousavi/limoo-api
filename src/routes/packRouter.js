@@ -6,6 +6,7 @@ function packRouter(app)
     app.route(urlConstant.pack)
         .get(packController.getPack)
         .post(packController.addPack)
+        .patch(packController.editPack)
         .delete(packController.deletePack)
 }
 

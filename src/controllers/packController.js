@@ -76,11 +76,30 @@ function deletePack(req, res)
         })
 }
 
+function editPack(req, res)
+{
+    checkPermission({req, res})
+        .then(() =>
+        {
+            const {name, pack_id} = req.body
+            packTb.findOneAndUpdate({_id: pack_id}, {name}, {new: true, useFindAndModify: false, runValidators: true})
+                .then(updated =>
+                {
+                    createSuccessRespond({res, data: updated, message: respondTextConstant.success.updatePack})
+                })
+                .catch(err =>
+                {
+                    createErrorText({res, status: 400, message: respondTextConstant.error.updatePack, detail: err})
+                })
+        })
+}
+
 const packController = {
     _getPacks,
     getPack,
     addPack,
     deletePack,
+    editPack,
 }
 
 export default packController
